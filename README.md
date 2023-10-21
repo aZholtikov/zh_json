@@ -1,3 +1,41 @@
-# esp_component_template
+# ESP32 ESP-IDF and ESP8266 RTOS SDK component for json
 
-esp_component_template
+Currently only a simple json is being created. Will be updated as needed.
+
+## Using
+
+In an existing project, run the following command to install the components:
+
+```text
+cd ../your_project/components
+git clone http://git.zh.com.ru/alexey.zholtikov/zh_json.git
+```
+
+In the application, add the component:
+
+```c
+#include "zh_json.h"
+```
+
+## Example
+
+Create json:
+
+```c
+#include "stdio.h"
+#include "zh_json.h"
+
+void app_main(void)
+{
+    zh_json_t json;
+    zh_json_init(&json);
+    zh_json_add(&json, "Name 1", "Hello world!");
+    zh_json_add(&json, "Name 2", "true");
+    zh_json_add(&json, "Name 3", "255");
+    zh_json_add(&json, "Name 4", "123,456");
+    char buffer[124] = {0};
+    zh_json_create(&json, buffer);
+    printf("Json is: \n%s\n", buffer);
+    zh_json_free(&json);
+}
+```
