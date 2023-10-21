@@ -33,7 +33,7 @@ void app_main(void)
     zh_json_add(&json, "Name 2", "true");
     zh_json_add(&json, "Name 3", "255");
     zh_json_add(&json, "Name 4", "123,456");
-    char buffer[124] = {0};
+    char buffer[128] = {0};
     zh_json_create(&json, buffer);
     printf("Json is: %s\n", buffer);
     zh_json_free(&json);
