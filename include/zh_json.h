@@ -8,6 +8,7 @@
 extern "C"
 {
 #endif
+
     typedef struct zh_json_t
     {
         char **names;
