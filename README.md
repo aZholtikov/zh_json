@@ -39,3 +39,5 @@ void app_main(void)
     zh_json_free(&json);
 }
 ```
+
+Any [feedback](mailto:github@azholtikov.ru) will be gladly accepted.
