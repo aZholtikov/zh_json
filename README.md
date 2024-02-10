@@ -2,6 +2,11 @@
 
 Currently only a simple json is being created. Will be updated as needed.
 
+## Tested on
+
+1. ESP8266 RTOS_SDK v3.4
+2. ESP32 ESP-IDF v5.1.0
+
 ## Using
 
 In an existing project, run the following command to install the components:

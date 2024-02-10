@@ -1,2 +1,1 @@
-idf_component_register(SRCS "zh_json.c"
-                    INCLUDE_DIRS "include")
+idf_component_register(SRCS "zh_json.c" INCLUDE_DIRS "include")
