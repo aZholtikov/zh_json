@@ -6,6 +6,10 @@ static void *s_zh_json_get_value(zh_json_t *json, uint8_t index);
 
 esp_err_t zh_json_init(zh_json_t *json)
 {
+    if (json == NULL)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
     json->capacity = 0;
     json->size = 0;
     json->names = calloc(json->capacity, sizeof(char *));
@@ -15,6 +19,10 @@ esp_err_t zh_json_init(zh_json_t *json)
 
 esp_err_t zh_json_free(zh_json_t *json)
 {
+    if (json == NULL)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
     free(json->names);
     free(json->values);
     return ESP_OK;
@@ -51,18 +59,25 @@ static void *s_zh_json_get_value(zh_json_t *json, uint8_t index)
 
 esp_err_t zh_json_add(zh_json_t *json, char *name, char *value)
 {
+    if (json == NULL || name == NULL || value == NULL)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
     if (json->capacity == json->size)
     {
         s_zh_json_resize(json, json->capacity + 1);
     }
     json->names[json->size] = name;
     json->values[json->size++] = value;
-
     return ESP_OK;
 }
 
-void zh_json_create(zh_json_t *json, char *buffer)
+esp_err_t zh_json_create(zh_json_t *json, char *buffer)
 {
+    if (json == NULL || buffer == NULL)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
     strcat(buffer, "{ ");
     for (uint8_t i = 0; i < json->size; ++i)
     {
@@ -77,4 +92,5 @@ void zh_json_create(zh_json_t *json, char *buffer)
         }
     }
     strcat(buffer, " }");
+    return ESP_OK;
 }
