@@ -80,10 +80,11 @@ extern "C"
      * @param[in,out] json Pointer to structure of json.
      * @param[in] name Pointer to name for add.
      * @param[in] value Value for add.
+     * @param[in] value Value precision.
      *
      * @return ESP_OK if success or an error code otherwise.
      */
-    esp_err_t zh_json_add_float(zh_json_t *json, char *name, float value);
+    esp_err_t zh_json_add_float(zh_json_t *json, char *name, float value, uint8_t precision);
 
     /**
      * @brief Add bool item at end of json.

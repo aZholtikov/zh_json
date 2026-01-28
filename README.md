@@ -39,7 +39,7 @@ void app_main(void)
     zh_json_init(&json);
     zh_json_add_char(&json, "Name 1", "Hello world!");
     zh_json_add_int(&json, "Name 2", -123456);
-    zh_json_add_float(&json, "Name 3", 123.456);
+    zh_json_add_float(&json, "Name 3", 1234.56789, 2);
     zh_json_add_bool(&json, "Name 4", true);
     char buffer[128] = {0};
     zh_json_object_create(&json, buffer);

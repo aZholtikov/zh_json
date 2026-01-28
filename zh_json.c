@@ -24,7 +24,7 @@ typedef enum
 
 } zh_json_type_t;
 
-static esp_err_t _zh_json_add(zh_json_t *json, char *name, void *value, uint8_t type);
+static esp_err_t _zh_json_add(zh_json_t *json, char *name, void *value, uint8_t type, uint8_t precision);
 static esp_err_t _zh_json_resize(zh_json_t *json, uint16_t capacity);
 static esp_err_t _zh_json_create(zh_json_t *json, char *buffer, bool is_object);
 
@@ -64,7 +64,7 @@ esp_err_t zh_json_add_char(zh_json_t *json, char *name, char *value)
     ZH_LOGI("Adding char item to json begin.");
     ZH_ERROR_CHECK(json != NULL && value != NULL, ESP_ERR_INVALID_ARG, NULL, "Adding char item to json fail. Invalid argument.");
     ZH_ERROR_CHECK(json->is_initialized == true, ESP_ERR_INVALID_STATE, NULL, "Adding char item to json fail. Json not initialized.");
-    esp_err_t err = _zh_json_add(json, name, value, ZH_JSON_CHAR);
+    esp_err_t err = _zh_json_add(json, name, value, ZH_JSON_CHAR, 0);
     ZH_ERROR_CHECK(err == ESP_OK, err, NULL, "Adding char item to json fail.");
     ZH_LOGI("Adding char item to json success.");
     return ESP_OK;
@@ -75,18 +75,18 @@ esp_err_t zh_json_add_int(zh_json_t *json, char *name, int value)
     ZH_LOGI("Adding int item to json begin.");
     ZH_ERROR_CHECK(json != NULL, ESP_ERR_INVALID_ARG, NULL, "Adding int item to json fail. Invalid argument.");
     ZH_ERROR_CHECK(json->is_initialized == true, ESP_ERR_INVALID_STATE, NULL, "Adding int item to json fail. Json not initialized.");
-    esp_err_t err = _zh_json_add(json, name, &value, ZH_JSON_INT);
+    esp_err_t err = _zh_json_add(json, name, &value, ZH_JSON_INT, 0);
     ZH_ERROR_CHECK(err == ESP_OK, err, NULL, "Adding int item to json fail.");
     ZH_LOGI("Adding int item to json success.");
     return ESP_OK;
 }
 
-esp_err_t zh_json_add_float(zh_json_t *json, char *name, float value)
+esp_err_t zh_json_add_float(zh_json_t *json, char *name, float value, uint8_t precision)
 {
     ZH_LOGI("Adding float item to json begin.");
     ZH_ERROR_CHECK(json != NULL, ESP_ERR_INVALID_ARG, NULL, "Adding float item to json fail. Invalid argument.");
     ZH_ERROR_CHECK(json->is_initialized == true, ESP_ERR_INVALID_STATE, NULL, "Adding float item to json fail. Json not initialized.");
-    esp_err_t err = _zh_json_add(json, name, &value, ZH_JSON_FLOAT);
+    esp_err_t err = _zh_json_add(json, name, &value, ZH_JSON_FLOAT, precision);
     ZH_ERROR_CHECK(err == ESP_OK, err, NULL, "Adding float item to json fail.");
     ZH_LOGI("Adding float item to json success.");
     return ESP_OK;
@@ -97,7 +97,7 @@ esp_err_t zh_json_add_bool(zh_json_t *json, char *name, bool value)
     ZH_LOGI("Adding bool item to json begin.");
     ZH_ERROR_CHECK(json != NULL, ESP_ERR_INVALID_ARG, NULL, "Adding bool item to json fail. Invalid argument.");
     ZH_ERROR_CHECK(json->is_initialized == true, ESP_ERR_INVALID_STATE, NULL, "Adding bool item to json fail. Json not initialized.");
-    esp_err_t err = _zh_json_add(json, name, &value, ZH_JSON_BOOL);
+    esp_err_t err = _zh_json_add(json, name, &value, ZH_JSON_BOOL, 0);
     ZH_ERROR_CHECK(err == ESP_OK, err, NULL, "Adding bool item to json fail.");
     ZH_LOGI("Adding bool item to json success.");
     return ESP_OK;
@@ -108,7 +108,7 @@ esp_err_t zh_json_add_object(zh_json_t *json, char *name, char *object)
     ZH_LOGI("Adding object item to json begin.");
     ZH_ERROR_CHECK(json != NULL && object != NULL, ESP_ERR_INVALID_ARG, NULL, "Adding object item to json fail. Invalid argument.");
     ZH_ERROR_CHECK(json->is_initialized == true, ESP_ERR_INVALID_STATE, NULL, "Adding object item to json fail. Json not initialized.");
-    esp_err_t err = _zh_json_add(json, name, object, ZH_JSON_OBJ);
+    esp_err_t err = _zh_json_add(json, name, object, ZH_JSON_OBJ, 0);
     ZH_ERROR_CHECK(err == ESP_OK, err, NULL, "Adding object item to json fail.");
     ZH_LOGI("Adding object item to json success.");
     return ESP_OK;
@@ -119,7 +119,7 @@ esp_err_t zh_json_add_array(zh_json_t *json, char *name, char *array)
     ZH_LOGI("Adding array item to json begin.");
     ZH_ERROR_CHECK(json != NULL && array != NULL, ESP_ERR_INVALID_ARG, NULL, "Adding array item to json fail. Invalid argument.");
     ZH_ERROR_CHECK(json->is_initialized == true, ESP_ERR_INVALID_STATE, NULL, "Adding array item to json fail. Json not initialized.");
-    esp_err_t err = _zh_json_add(json, name, array, ZH_JSON_ARRAY);
+    esp_err_t err = _zh_json_add(json, name, array, ZH_JSON_ARRAY, 0);
     ZH_ERROR_CHECK(err == ESP_OK, err, NULL, "Adding array item to json fail.");
     ZH_LOGI("Adding array item to json success.");
     return ESP_OK;
@@ -147,7 +147,7 @@ esp_err_t zh_json_array_create(zh_json_t *json, char *buffer)
     return ESP_OK;
 }
 
-static esp_err_t _zh_json_add(zh_json_t *json, char *name, void *value, uint8_t type) // -V2008
+static esp_err_t _zh_json_add(zh_json_t *json, char *name, void *value, uint8_t type, uint8_t precision) // -V2008
 {
     if (json->capacity == json->size)
     {
@@ -178,7 +178,7 @@ static esp_err_t _zh_json_add(zh_json_t *json, char *name, void *value, uint8_t 
         strcpy(json->values[json->size], char_buffer);
         break;
     case ZH_JSON_FLOAT:
-        sprintf(char_buffer, "%f", *(float *)value);
+        sprintf(char_buffer, "%.*f", precision, *(float *)value);
         json->values[json->size] = (char *)heap_caps_calloc(1, strlen(char_buffer) + 1, MALLOC_CAP_8BIT);
         ZH_ERROR_CHECK(json->values[json->size] != NULL, ESP_ERR_NO_MEM, NULL, "Memory allocation fail or no free memory in the heap.");
         strcpy(json->values[json->size], char_buffer);
