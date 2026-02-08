@@ -21,7 +21,6 @@ typedef enum
     ZH_JSON_BOOL,
     ZH_JSON_OBJ,
     ZH_JSON_ARRAY
-
 } zh_json_type_t;
 
 static esp_err_t _zh_json_add(zh_json_t *json, char *name, void *value, uint8_t type, uint8_t precision);
